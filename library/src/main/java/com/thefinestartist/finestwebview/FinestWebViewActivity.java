@@ -220,7 +220,7 @@ public class FinestWebViewActivity extends AppCompatActivity
   protected TextView menuCopyLinkTv;
   protected LinearLayout menuOpenWith;
   protected TextView menuOpenWithTv;
-  protected FrameLayout webLayout;
+
   DownloadListener downloadListener = new DownloadListener() {
     @Override public void onDownloadStart(String url, String userAgent, String contentDisposition,
         String mimetype, long contentLength) {
@@ -472,9 +472,7 @@ public class FinestWebViewActivity extends AppCompatActivity
     menuOpenWith = (LinearLayout) findViewById(R.id.menuOpenWith);
     menuOpenWithTv = (TextView) findViewById(R.id.menuOpenWithTv);
 
-    webLayout = (FrameLayout) findViewById(R.id.webLayout);
-    webView = new WebView(this);
-    webLayout.addView(webView);
+    webView = (NestedScrollWebView) findViewById(R.id.webView);
   }
 
   protected void layoutViews() {
@@ -544,15 +542,6 @@ public class FinestWebViewActivity extends AppCompatActivity
           break;
       }
       progressBar.setLayoutParams(params);
-    }
-
-    { // WebLayout
-      float toolbarHeight = getResources().getDimension(R.dimen.toolbarHeight);
-      int statusBarHeight = DisplayUtil.getStatusBarHeight();
-      int screenHeight = DisplayUtil.getHeight();
-      float webLayoutMinimumHeight = screenHeight - toolbarHeight - statusBarHeight;
-      if (showDivider && !gradientDivider) webLayoutMinimumHeight -= dividerHeight;
-      webLayout.setMinimumHeight((int) webLayoutMinimumHeight);
     }
   }
 
@@ -1168,7 +1157,7 @@ public class FinestWebViewActivity extends AppCompatActivity
     @Override public void onPageStarted(WebView view, String url, Bitmap favicon) {
       BroadCastManager.onPageStarted(FinestWebViewActivity.this, key, url);
       if (!url.contains("docs.google.com") && url.endsWith(".pdf")) {
-        webView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + url);
+        webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + url);
       }
     }
 
@@ -1189,7 +1178,7 @@ public class FinestWebViewActivity extends AppCompatActivity
         forward.setVisibility(View.GONE);
       }
 
-      if (injectJavaScript != null) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && injectJavaScript != null) {
         webView.evaluateJavascript(injectJavaScript, null);
       }
     }
